@@ -51,6 +51,17 @@ float NLSLutils_dot(int size, const float* v0, const float* v1);
  */
 void NLSLutils_tranformvertex(int size, const float* centroid, const float* worst, float rho, float* transformed);
 
+/**
+ * @brief check if x0 is closer to x1 within the threshold xth.
+ * 
+ * @param size 
+ * @param x0 
+ * @param x1 
+ * @param xth 
+ * @return int 1: closer, 0: not closer
+ */
+int NLSLutils_iscloserthan(int size, const float* x0, const float* x1, const float* xth);
+
 #define NLSL_SAFEFREE(ppobj) if ((ppobj) && *(ppobj)) { free(*(ppobj)); *(ppobj) = NULL; }
 
 #define NLSL_ARRAYSIZE(_a_) sizeof(_a_)/sizeof(_a_[0])

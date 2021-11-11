@@ -57,14 +57,37 @@ int objective(int cx, const float* x, int cy, float* y, int cp, const float* par
 
 void setconf(pNLSLsolverconf_t conf)
 {
+#ifdef NDEBUG
+    conf->trace = (FILE*)NULL;
+#else
     conf->trace = stderr;
+#endif
     memcpy(conf->yTarget, yTarget, sizeof(yTarget));
     memcpy(conf->xInitial, xInitial, sizeof(xInitial));
     NLSL_FILLFLOATS(conf->xInitialSteps, 1.0f, conf->cx);
-    NLSL_FILLFLOATS(conf->xEps, 1.0e-4f, conf->cx);
+    NLSL_FILLFLOATS(conf->xEps, 1.0e-8f, conf->cx);
     memcpy(conf->params, params, sizeof(params));
-    conf->thObjective = 1.0e-4f;
+    conf->thObjective = 1.0e-6f;
     conf->objective  = objective;
+}
+
+void showresult(pNLSLsolver_t solver)
+{
+    static const char* StatusLabels[] = { "IterLimit", "XConverged", "YConverged", "ErrorAbort", "NotRun", "Running" };
+    printf("status = %s\n", StatusLabels[(int)NLSLsolver_status(solver)]);
+    printf("eval final = %f\n", NLSLsolver_evalfinal(solver));
+    pcNLSLsolverconf_t conf = NLSLsolver_conf(solver);
+    const float* x = NLSLsolver_xfinal(solver);
+    const float* y = NLSLsolver_yfinal(solver);
+    for (int i = 0; i < conf->cx; i++)
+    {
+        printf("\tx[%d] = %f\n", i, x[i]);
+    }
+    printf("\n");
+    for (int i = 0; i < conf->cy; i++)
+    {
+        printf("\ty[%d] = %f\n", i, y[i]);
+    }
 }
 
 int main(int argc, const char* *argv)
@@ -84,7 +107,7 @@ int main(int argc, const char* *argv)
         {
             break;
         }
-    } while (0);
-    NLSL_SAFEFREE(&solver);
+        showresult(solver);
+    } while (0);    NLSL_SAFEFREE(&solver);
     return err;
 }

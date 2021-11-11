@@ -1,5 +1,6 @@
 #include "NLSLutils.h"
 #include <memory.h>
+#include <math.h>
 
 void NLSLutils_addfloats(int size, float* dst, const float* src)
 {
@@ -41,4 +42,20 @@ void NLSLutils_tranformvertex(int size, const float* centroid, const float* wors
     {
         transformed[i] = centroid[i] + rho * (centroid[i] - worst[i]);
     }
+}
+
+int NLSLutils_iscloserthan(int size, const float* x0, const float* x1, const float* xth)
+{
+    int result = 1;
+    do {
+        for (int i = 0; i < size; i++)
+        {
+            if (fabsf(x0[i] - x1[i]) >= xth[i])
+            { // exceeds threshold
+                result = 0;
+                break;
+            }
+        }
+    } while (0);
+    return result;
 }

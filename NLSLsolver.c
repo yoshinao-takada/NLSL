@@ -163,6 +163,16 @@ const float* NLSLsolver_xfinal(pcNLSLsolver_t solver)
     return solver->vertices[0]->x;
 }
 
+const float* NLSLsolver_yfinal(pcNLSLsolver_t solver)
+{
+    return solver->vertices[0]->y;
+}
+
+const float NLSLsolver_evalfinal(pcNLSLsolver_t solver)
+{
+    return solver->vertices[0]->evalResult;
+}
+
 static int NLSLsolver_evalcentroid(pNLSLsolver_t solver, pNLSLevaluator_t evaluator)
 {
     NLSL_FILLFLOATS(solver->vertices[solver->indexCentroid]->x, 0.0f, solver->conf.cx);
@@ -194,6 +204,57 @@ static int NLSLsolver_shrink(pNLSLsolver_t solver, pNLSLevaluator_t evalulator)
     return err;
 }
 
+/**
+ * @brief check if best y variable vector is sufficiently close to yTarget.
+ * 
+ * @param solver [in,out]
+ * @return int 1: converged, 0: not yet
+ */
+static int NLSLsolver_yconverged(pNLSLsolver_t solver)
+{
+    int result = 0;
+    if (solver->vertices[0]->evalResult < solver->conf.thObjective)
+    {
+        solver->status = NLSLstatus_yconverged;
+        result = 1;
+    }
+    return result;
+}
+
+/**
+ * @brief check if best, worst, and centroid x variable vectors are sufficiently close within xEps.
+ * This means that x variation between iteration is too small to improve y and yTarget distance.
+ * 
+ * @param solver 
+ * @return int 1: converged, 0: not yet
+ */
+static int NLSLsolver_xconverged(pNLSLsolver_t solver)
+{
+    int result = 1;
+    do {
+        pcNLSLvars_t best = solver->vertices[0];
+        pcNLSLvars_t worst = solver->vertices[solver->conf.cx];
+        pcNLSLvars_t centroid = solver->vertices[solver->indexCentroid];
+        result *= NLSLutils_iscloserthan(solver->conf.cx, best->x, worst->x, solver->conf.xEps);
+        if (result == 0)
+        {
+            break;
+        }
+        result *= NLSLutils_iscloserthan(solver->conf.cx, best->x, centroid->x, solver->conf.xEps);
+        if (result == 0)
+        {
+            break;
+        }
+        result *= NLSLutils_iscloserthan(solver->conf.cx, centroid->x, worst->x, solver->conf.xEps);
+        if (result == 0)
+        {
+            break;
+        }
+        solver->status = NLSLstatus_xconverged;
+    } while (0);
+    return result;
+}
+
 int NLSLsolver_exec(pNLSLsolver_t solver, int iterMax)
 {
     int err = EXIT_SUCCESS;
@@ -205,13 +266,10 @@ int NLSLsolver_exec(pNLSLsolver_t solver, int iterMax)
     {
         return ENOMEM;
     }
+    solver->status = NLSLstatus_running;
     do {
         qsort(solver->vertices, solver->conf.cx + 1, sizeof(pcNLSLvars_t), NLSLvars_compare);
-        if (0 /* convergence check */)
-        {
-            solver->status = NLSLstatus_converged;
-            break;
-        }
+        if (NLSLsolver_xconverged(solver) || NLSLsolver_yconverged(solver)) { break; }// check convergence
         NLSLsolver_showvertices(solver, 1, 0, solver->indexCentroid + 1);
         if (EXIT_SUCCESS != (err = NLSLsolver_evalcentroid(solver, evaluator)))
         {
@@ -288,6 +346,14 @@ int NLSLsolver_exec(pNLSLsolver_t solver, int iterMax)
         }
     } while (--iterMax);
     NLSL_SAFEFREE(&evaluator);
-    solver->status = NLSLstatus_iterlimit;
+    if (iterMax == 0)
+    {
+        solver->status = NLSLstatus_iterlimit;
+    }
     return err;
+}
+
+NLSLstatus_t NLSLsolver_status(pcNLSLsolver_t solver)
+{
+    return solver->status;
 }

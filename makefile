@@ -15,6 +15,7 @@ RELEASE_OBJECTS = $(RELEASE_OBJECT_DIR)/NLSLapp.o $(RELEASE_OBJECT_DIR)/NLSLsolv
 DEBUG_TARGET = $(DEBUG_TARGET_DIR)/NLSLapp.exe
 RELEASE_TARGET = $(RELEASE_TARGET_DIR)/NLSLapp.exe
 
+# ----------- debug --------------------
 debug	:	$(DEBUG_TARGET)
 $(DEBUG_TARGET)	:	$(DEBUG_OBJECTS)
 	$(CC) -o $@ $^ $(DEBUG_LIBS)
@@ -42,3 +43,34 @@ $(DEBUG_OBJECT_DIR)/NLSLmatrix.o	:	NLSLmatrix.c
 clean_debug	:
 	rm -f $(DEBUG_OBJECTS)
 	rm -f $(DEBUG_TARGET)
+
+# ----------- release --------------------
+release	:	$(RELEASE_TARGET)
+$(RELEASE_TARGET)	:	$(RELEASE_OBJECTS)
+	$(CC) -o $@ $^ $(RELEASE_LIBS)
+
+$(RELEASE_OBJECT_DIR)/NLSLapp.o	:	NLSLapp.c
+	mkdir -p $(RELEASE_OBJECT_DIR)
+	$(CC) $(RELEASE_CC_FLAGS) -o $@ $<
+
+$(RELEASE_OBJECT_DIR)/NLSLsolver.o	:	NLSLsolver.c
+	mkdir -p $(RELEASE_OBJECT_DIR)
+	$(CC) $(RELEASE_CC_FLAGS) -o $@ $<
+
+$(RELEASE_OBJECT_DIR)/NLSLvars.o	:	NLSLvars.c
+	mkdir -p $(RELEASE_OBJECT_DIR)
+	$(CC) $(RELEASE_CC_FLAGS) -o $@ $<
+
+$(RELEASE_OBJECT_DIR)/NLSLutils.o	:	NLSLutils.c
+	mkdir -p $(RELEASE_OBJECT_DIR)
+	$(CC) $(RELEASE_CC_FLAGS) -o $@ $<
+
+$(RELEASE_OBJECT_DIR)/NLSLmatrix.o	:	NLSLmatrix.c
+	mkdir -p $(RELEASE_OBJECT_DIR)
+	$(CC) $(RELEASE_CC_FLAGS) -o $@ $<
+
+clean_release	:
+	rm -f $(RELEASE_OBJECTS)
+	rm -f $(RELEASE_TARGET)
+
+clean_all	:	clean_debug clean_release
