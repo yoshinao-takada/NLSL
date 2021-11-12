@@ -10,9 +10,9 @@
 #define ARRAYSIZE(a) sizeof(a)/sizeof((a)[0])
 #endif
 #if (EQUSETUP == 0)
-#define YTARGET { -1.4f, -1.8f, -10.6f, -24.4f, 1.0f, -26.1f, 0.0f, 15.2f, 1.2f, -4.9f, 11.56f, 0.55f, 1.0f }
+#define YTARGET { -1.4f, -1.8f, -10.6f, -24.4f, 1.0f, -26.1f, 0.0f, 15.2f, 1.2f, -4.9f, 11.56f, 0.55f }
 #define XIDEAL { 1.0f, 2.2f, -3.2f, 0.5f, 3.0f, 7.0f, -2.0f, -4.0f, -2.0f, -1.0f, 1.0f, -3.3f }
-#define XINITIAL { 1.0f, 2.2f, -3.2f, 0.5f, 3.0f, 7.0f, -2.0f, -4.0f, -2.0f, -1.0f, 0.0f, 0.0f }
+#define XINITIAL { 2.0f, 2.2f, -3.2f, 0.5f, 3.0f, 7.0f, -2.0f, -4.0f, -2.0f, -1.0f, 0.0f, 0.0f }
 #define PARAMS { 0.0f }
 #elif (EQUSETUP == 1)
 #define YTARGET { 0.0f }
@@ -29,8 +29,7 @@ static const float params[] = PARAMS;
 int objective(int cx, const float* x, int cy, float* y, int cp, const float* params)
 {
     int err = 0;
-    assert(cx == 12 && cy == 13);
-    float x_[12];
+    float x_[ARRAYSIZE(xInitial)];
     memcpy(x_, x, sizeof(x_));
     NLSLmatrix_t x0 = { 2, 2, x_ };
     NLSLmatrix_t x1 = { 2, 2, x_ + 4 };
@@ -41,7 +40,6 @@ int objective(int cx, const float* x, int cy, float* y, int cp, const float* par
     NLSLmatrix_mult(&x0, &x1, &y0);
     NLSLmatrix_mult(&x1, &x2, &y1);
     NLSLmatrix_mult(&x2, &x0, &y2);
-    y[12] = x[0];
     return err;
 }
 #elif (EQUSETUP == 1)
@@ -65,9 +63,9 @@ void setconf(pNLSLsolverconf_t conf)
     memcpy(conf->yTarget, yTarget, sizeof(yTarget));
     memcpy(conf->xInitial, xInitial, sizeof(xInitial));
     NLSL_FILLFLOATS(conf->xInitialSteps, 1.0f, conf->cx);
-    NLSL_FILLFLOATS(conf->xEps, 1.0e-8f, conf->cx);
+    NLSL_FILLFLOATS(conf->xEps, 1.0e-4f, conf->cx);
     memcpy(conf->params, params, sizeof(params));
-    conf->thObjective = 1.0e-6f;
+    conf->thObjective = 1.0e-8f;
     conf->objective  = objective;
 }
 
@@ -96,17 +94,26 @@ int main(int argc, const char* *argv)
     pNLSLsolver_t solver = NULL;
     int iter = (argc >= 2) ? atoi(argv[1]) : 5;
     do {
+        // Step 1: create the solver object
         solver = NLSLsolver_new(ARRAYSIZE(xInitial), ARRAYSIZE(yTarget), ARRAYSIZE(params));
+
+        // Step 2: set configuration
         pNLSLsolverconf_t conf = NLSLsolver_conf(solver);
         setconf(conf);
+
+        // Step 3: initialize the solver with the configuration
         if (EXIT_SUCCESS != (err = NLSLsolver_init(solver)))
         {
             break;
         }
+
+        // Step 4: run optimization
         if (EXIT_SUCCESS != (err = NLSLsolver_exec(solver, iter)))
         {
             break;
         }
+
+        // Step 5: retrieve and show the results.
         showresult(solver);
     } while (0);    NLSL_SAFEFREE(&solver);
     return err;
