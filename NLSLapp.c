@@ -29,14 +29,12 @@ static const float params[] = PARAMS;
 int objective(int cx, const float* x, int cy, float* y, int cp, const float* params)
 {
     int err = 0;
-    float x_[ARRAYSIZE(xInitial)];
-    memcpy(x_, x, sizeof(x_));
-    NLSLmatrix_t x0 = { 2, 2, x_ };
-    NLSLmatrix_t x1 = { 2, 2, x_ + 4 };
-    NLSLmatrix_t x2 = { 2, 2, x_ + 8 };
+    NLSLmatrix_t x0 = { 2, 2, { x } };
+    NLSLmatrix_t x1 = { 2, 2, { x + 4 } };
+    NLSLmatrix_t x2 = { 2, 2, { x + 8}  };
     NLSLmatrix_t y0 = { 2, 2, y };
-    NLSLmatrix_t y1 = { 2, 2, y + 4 };
-    NLSLmatrix_t y2 = { 2, 2, y + 8 };
+    NLSLmatrix_t y1 = { 2, 2, { y + 4 } };
+    NLSLmatrix_t y2 = { 2, 2, { y + 8 } };
     NLSLmatrix_mult(&x0, &x1, &y0);
     NLSLmatrix_mult(&x1, &x2, &y1);
     NLSLmatrix_mult(&x2, &x0, &y2);

@@ -10,7 +10,10 @@ extern "C" {
 typedef struct {
     int rows;
     int columns;
-    float* elements;
+    union {
+        const float* c;
+        float* v;
+    } elements;
 } NLSLmatrix_t, *pNLSLmatrix_t;
 typedef const NLSLmatrix_t *pcNLSLmatrix_t;
 

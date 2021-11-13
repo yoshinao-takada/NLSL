@@ -10,7 +10,7 @@ pNLSLmatrix_t NLSLmatrix_new(int rows, int columns)
     pNLSLmatrix_t p = (pNLSLmatrix_t)malloc(sizeof(NLSLmatrix_t) + dataBytes);
     p->rows = rows;
     p->columns = columns;
-    NLSL_FILLFLOATS(p->elements, 0.0f, rows * columns);
+    NLSL_FILLFLOATS(p->elements.v, 0.0f, rows * columns);
     return p;
 }
 
@@ -19,8 +19,8 @@ void NLSLmatrix_add(pcNLSLmatrix_t matA, pcNLSLmatrix_t matB, pNLSLmatrix_t matA
     assert((matA->rows == matB->rows) && (matA->columns == matB->columns));
     assert((matA->rows == matA_B->rows) && (matA->columns == matA_B->columns));
     int elementCount = matA->rows * matA->columns;
-    memcpy(matA_B->elements, matA->elements, elementCount * sizeof(float));
-    NLSLutils_addfloats(elementCount, matA_B->elements, matB->elements);
+    memcpy(matA_B->elements.v, matA->elements.c, elementCount * sizeof(float));
+    NLSLutils_addfloats(elementCount, matA_B->elements.v, matB->elements.c);
 }
 
 void NLSLmatrix_sub(pcNLSLmatrix_t matA, pcNLSLmatrix_t matB, pNLSLmatrix_t matA_B)
@@ -28,8 +28,8 @@ void NLSLmatrix_sub(pcNLSLmatrix_t matA, pcNLSLmatrix_t matB, pNLSLmatrix_t matA
     assert((matA->rows == matB->rows) && (matA->columns == matB->columns));
     assert((matA->rows == matA_B->rows) && (matA->columns == matA_B->columns));
     int elementCount = matA->rows * matA->columns;
-    memcpy(matA_B->elements, matA->elements, elementCount * sizeof(float));
-    NLSLutils_subfloats(elementCount, matA_B->elements, matB->elements);
+    memcpy(matA_B->elements.v, matA->elements.c, elementCount * sizeof(float));
+    NLSLutils_subfloats(elementCount, matA_B->elements.v, matB->elements.c);
 }
 
 void NLSLmatrix_mult(pcNLSLmatrix_t matA, pcNLSLmatrix_t matB, pNLSLmatrix_t matA_B)
@@ -41,14 +41,14 @@ void NLSLmatrix_mult(pcNLSLmatrix_t matA, pcNLSLmatrix_t matB, pNLSLmatrix_t mat
         for (int columnA_B = 0; columnA_B != matA_B->columns; columnA_B++)
         {
             int indexA_B = columnA_B + rowA_B * matA_B->columns;
-            matA_B->elements[indexA_B] = 0.0f;
+            matA_B->elements.v[indexA_B] = 0.0f;
             for (int columnA = 0; columnA != matA->columns; columnA++)
             {
                 int indexA = columnA + rowA_B * matA->columns;
                 int rowB = columnA;
                 int columnB = columnA_B;
                 int indexB = columnB + rowB * matB->columns;
-                matA_B->elements[indexA_B] += matA->elements[indexA] * matB->elements[indexB];
+                matA_B->elements.v[indexA_B] += matA->elements.c[indexA] * matB->elements.c[indexB];
             }
         }
     }
@@ -65,7 +65,7 @@ void NLSLmatrix_transpose(pcNLSLmatrix_t matA, pNLSLmatrix_t matA_t)
         {
             int indexA = column + row * matA->columns;
             int indexA_t = row + column * matA_t->columns;
-            matA_t->elements[indexA_t] = matA->elements[indexA];
+            matA_t->elements.v[indexA_t] = matA->elements.c[indexA];
         }
     }
 }
