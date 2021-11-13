@@ -175,6 +175,7 @@ const float NLSLsolver_evalfinal(pcNLSLsolver_t solver)
 
 static int NLSLsolver_evalcentroid(pNLSLsolver_t solver, pNLSLevaluator_t evaluator)
 {
+    // Step 1: calculate centroid of vertices[0] .. vertices[conf.cx-1], i.e. N-dimensional simplex
     NLSL_FILLFLOATS(solver->vertices[solver->indexCentroid]->x, 0.0f, solver->conf.cx);
     for (int i = 0; i < solver->conf.cx; i++)
     {
@@ -182,9 +183,12 @@ static int NLSLsolver_evalcentroid(pNLSLsolver_t solver, pNLSLevaluator_t evalua
     }
     const float rcpItemCount = 1.0f / (float)solver->conf.cx;
     NLSLutils_multfloatsscalar(solver->conf.cx, solver->vertices[solver->indexCentroid]->x, rcpItemCount);
+
+    // Step 2: evaluate objective function for the centroid point.
     return NLSLevaluator_eval(evaluator, solver->vertices[solver->indexCentroid], solver->conf.cp, solver->conf.params);
 }
 
+// Apply shirink operation to vertices[1]..vertices[conf.cx]. vertices[0] is excluded from the operation.
 static int NLSLsolver_shrink(pNLSLsolver_t solver, pNLSLevaluator_t evalulator)
 {
     int err = EXIT_SUCCESS;

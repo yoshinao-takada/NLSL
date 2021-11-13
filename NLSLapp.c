@@ -115,6 +115,7 @@ int main(int argc, const char* *argv)
 
         // Step 5: retrieve and show the results.
         showresult(solver);
-    } while (0);    NLSL_SAFEFREE(&solver);
+    } while (0);
+    NLSL_SAFEFREE(&solver);
     return err;
 }
