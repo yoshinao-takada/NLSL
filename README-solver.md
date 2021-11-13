@@ -91,3 +91,4 @@ Name | Description
 `NLSLsolver_yfinal()` | retrieve `V[0].y` after convergence
 `NLSLsolver_evalfinal()` | retrieve distance of `y` - `Y`<sub>TARGET</sub> after convergence
 `NLSLsolver_status()` | the status code shows the reason why the loop was terminated.
+<br>
