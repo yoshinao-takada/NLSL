@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.ispc": "ispc",
+        "math.h": "c"
+    }
+}

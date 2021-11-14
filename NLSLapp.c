@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <memory.h>
+// APP_SELECTOR = 0: Nelder-Mead solver
+// APP_SELECTOR = 1: QR-decomposition, which is used for camera calibration
+#define APP_SELECTOR    1
+
 #define EQUSETUP 0
 #ifndef ARRAYSIZE
 #define ARRAYSIZE(a) sizeof(a)/sizeof((a)[0])
@@ -12,7 +16,8 @@
 #if (EQUSETUP == 0)
 #define YTARGET { -1.4f, -1.8f, -10.6f, -24.4f, 1.0f, -26.1f, 0.0f, 15.2f, 1.2f, -4.9f, 11.56f, 0.55f }
 #define XIDEAL { 1.0f, 2.2f, -3.2f, 0.5f, 3.0f, 7.0f, -2.0f, -4.0f, -2.0f, -1.0f, 1.0f, -3.3f }
-#define XINITIAL { 2.0f, 2.2f, -3.2f, 0.5f, 3.0f, 7.0f, -2.0f, -4.0f, -2.0f, -1.0f, 0.0f, 0.0f }
+// #define XINITIAL { 2.0f, 2.2f, -3.2f, 0.5f, 3.0f, 7.0f, -2.0f, -4.0f, -2.0f, -1.0f, 0.0f, 0.0f }
+#define XINITIAL { 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f }
 #define PARAMS { 0.0f }
 #elif (EQUSETUP == 1)
 #define YTARGET { 0.0f }
@@ -86,6 +91,7 @@ void showresult(pNLSLsolver_t solver)
     }
 }
 
+#if (APP_SELECTOR == 0)
 int main(int argc, const char* *argv)
 {
     int err = EXIT_SUCCESS;
@@ -117,3 +123,45 @@ int main(int argc, const char* *argv)
     NLSL_SAFEFREE(&solver);
     return err;
 }
+
+#elif (APP_SELECTOR == 1)
+int main(int argc, const char* *argv)
+{
+    static const float Asrc[] = {
+        1.0f, 2.0f, 3.0f,
+        1.0f, 3.0f, 5.0f,
+        2.0f, 4.0f, 7.0f
+    };
+    static const float Qsrc[] = {
+        -4.0825e-1f, 1.8257e-1f, -8.9443e-1f,
+        -4.0825e-1f, -9.1287e-1f, 7.7716e-16f,
+        -8.1650e-1f, 3.6515e-1f, 4.4721e-1f
+    };
+    static const float Rsrc[] = {
+        -2.4495f, -5.3072f, -8.9815f,
+        0.0f, -0.9129f, -1.4606f,
+        0.0f, 0.0f, 0.4472f
+    };
+    int err = EXIT_SUCCESS;
+    float QRsrc[27];
+    do {
+        printf("QR-decomp test app enter.\n");
+        NLSLmatrix_t a = { 3,3, {Asrc} };
+        NLSLmatrix_t q = { 3,3, {QRsrc} };
+        NLSLmatrix_t r = { 3,3, {q.elements.c + 9} };
+        NLSLmatrix_t qr = { 3,3, {r.elements.c + 9} };
+        NLSLmatrix_QRdecomp(&a, &q, &r);
+        NLSLmatrix_print(stdout, &q);
+        NLSLmatrix_print(stdout, &r);
+        NLSLmatrix_mult(&q, &r, &qr);
+        NLSLmatrix_print(stdout, &qr);
+    } while (0);
+    return err;
+}
+#else
+int main(int argc, const char* *argv)
+{
+    fprintf(stderr, "Invalid app was selected.\n");
+    return -1;
+}
+#endif

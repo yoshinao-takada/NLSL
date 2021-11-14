@@ -1,7 +1,10 @@
 #ifndef NLSLMATRIX_H_
 #define NLSLMATRIX_H_
 #ifdef __cplusplus
+#include <cstdio>
 extern "C" {
+#else
+#include <stdio.h>
 #endif
 /**
  * @brief a matrix, row-major layout
@@ -52,6 +55,22 @@ void NLSLmatrix_mult(pcNLSLmatrix_t matA, pcNLSLmatrix_t matB, pNLSLmatrix_t mat
  */
 void NLSLmatrix_transpose(pcNLSLmatrix_t matA, pNLSLmatrix_t matA_t);
 
+/**
+ * @brief matA = matQ * matR, where Q: orthgonal matrix, R: UR triangular matrix
+ * 
+ * @param matA [in]
+ * @param matQ [out]
+ * @param matR [out]
+ */
+void NLSLmatrix_QRdecomp(pcNLSLmatrix_t matA, pNLSLmatrix_t  matQ, pNLSLmatrix_t matR);
+
+/**
+ * @brief print a matrix
+ * 
+ * @param pf [in] text output stream
+ * @param m [in] matrix
+ */
+void NLSLmatrix_print(FILE* pf, pcNLSLmatrix_t m);
 #ifdef __cplusplus
 }
 #endif
