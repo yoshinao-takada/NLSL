@@ -7,7 +7,8 @@
 #include <memory.h>
 // APP_SELECTOR = 0: Nelder-Mead solver
 // APP_SELECTOR = 1: QR-decomposition, which is used for camera calibration
-#define APP_SELECTOR    1
+// APP_SELECTOR = 2: invert matrix
+#define APP_SELECTOR    2
 
 #define EQUSETUP 0
 #ifndef ARRAYSIZE
@@ -156,6 +157,24 @@ int main(int argc, const char* *argv)
         NLSLmatrix_mult(&q, &r, &qr);
         NLSLmatrix_print(stdout, &qr);
     } while (0);
+    return err;
+}
+#elif (APP_SELECTOR == 2)
+int main(int argc, const char* *argv)
+{
+    static const float Asrc[] = {
+        1.0f, 2.0f, 3.0f,
+        1.0f, 3.0f, 5.0f,
+        2.0f, 4.0f, 7.0f
+    };
+    int err = EXIT_SUCCESS;
+    float invAsrc[18];
+    NLSLmatrix_t matA = { 3,3, {Asrc} };
+    NLSLmatrix_t matAinv = { 3,3, {invAsrc} };
+    NLSLmatrix_t matI = { 3,3, {invAsrc + 9} };
+    NLSLmatrix_inv(&matA, &matAinv);
+    NLSLmatrix_mult(&matA, &matAinv, &matI);
+    NLSLmatrix_print(stdout, &matI);
     return err;
 }
 #else

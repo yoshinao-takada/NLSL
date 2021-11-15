@@ -130,6 +130,78 @@ void NLSLmatrix_QRdecomp(pcNLSLmatrix_t matA, pNLSLmatrix_t  matQ, pNLSLmatrix_t
     NLSL_SAFEFREE(&u);
 }
 
+static int NLSLmatrix_pvrow(float** heads, int pvrow, int rows)
+{
+    int pvrowcandidate = pvrow;
+    float pvelement = heads[pvrow][pvrow];
+    for (int row = pvrow + 1; row != rows; row++)
+    {
+        if (fabsf(heads[row][pvrow]) > fabsf(pvelement))
+        {
+            pvrowcandidate = row;
+            pvelement = heads[row][pvrow];
+        }
+    }
+    return pvrowcandidate;
+}
+
+static void NLSLmatrix_swapptr(float** a, float** b)
+{
+    float* temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void NLSLmatrix_inv(pcNLSLmatrix_t matA, pNLSLmatrix_t matAinv)
+{
+    assert(matA->rows == matA->columns);
+    assert(matA->rows == matAinv->rows);
+    assert(matAinv->rows == matAinv->columns);
+    float* work = (float*)calloc(matA->rows * matA->columns * 2, sizeof(float));
+    float** heads = (float**)calloc(matA->rows, sizeof(float*));
+    int stride = 2 * matA->columns;
+    int copyBytes = matA->columns * sizeof(float);
+    const float* aPtr = matA->elements.c;
+    // init work area
+    for (int row = 0; row != matA->rows; row++)
+    {
+        heads[row] = work + row * stride;
+        memcpy(heads[row], aPtr, copyBytes);
+        aPtr += matA->columns;
+        NLSL_FILLFLOATS(heads[row] + matA->columns, 0.0f, matA->columns);
+        *(heads[row] + matA->columns + row) = 1.0f;
+    }
+    // calculation
+    for (int row = 0; row != matA->rows; row++)
+    {
+        int pvswaprow = NLSLmatrix_pvrow(heads, row, matA->rows);
+        if (row != pvswaprow)
+        {
+            NLSLmatrix_swapptr(&heads[row], &heads[pvswaprow]);
+        }
+        const float rcpPivot = 1.0f / heads[row][row];
+        NLSLutils_multfloatsscalar(stride - row, heads[row] + row, rcpPivot);
+        for (int row1 = 0; row1 != matA->rows; row1++)
+        {
+            if (row == row1) continue;
+            float mpy = -heads[row1][row];
+            for (int column = row; column != stride; column++)
+            {
+                heads[row1][column] += mpy * heads[row][column];
+            }
+        }
+    }
+    // copy work to matAinv
+    float* ainvPtr = matAinv->elements.v;
+    for (int row = 0; row != matA->rows; row++)
+    {
+        memcpy(ainvPtr, heads[row] + matA->rows, copyBytes);
+        ainvPtr += matA->columns;
+    }
+    NLSL_SAFEFREE(&work);
+    NLSL_SAFEFREE(&heads);
+}
+
 void NLSLmatrix_print(FILE* pf, pcNLSLmatrix_t m)
 {
     const float* elementPtr = m->elements.c;

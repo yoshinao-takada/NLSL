@@ -65,6 +65,14 @@ void NLSLmatrix_transpose(pcNLSLmatrix_t matA, pNLSLmatrix_t matA_t);
 void NLSLmatrix_QRdecomp(pcNLSLmatrix_t matA, pNLSLmatrix_t  matQ, pNLSLmatrix_t matR);
 
 /**
+ * @brief matAinv = inv(matA)
+ * 
+ * @param matA [in]
+ * @param matAinv [out]
+ */
+void NLSLmatrix_inv(pcNLSLmatrix_t matA, pNLSLmatrix_t matAinv);
+
+/**
  * @brief print a matrix
  * 
  * @param pf [in] text output stream

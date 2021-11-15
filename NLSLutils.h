@@ -81,7 +81,7 @@ int NLSLutils_iscloserthan(int size, const float* x0, const float* x1, const flo
  * @param _val_ [in] scalar value
  * @param _size_ [in] array size
  */
-#define NLSL_FILLFLOATS(_a_,_val_,_size_) for (int a_index = 0; a_index < _size_; a_index++) { _a_[a_index] = _val_; }
+#define NLSL_FILLFLOATS(_a_,_val_,_size_) for (int a_index = 0; a_index < _size_; a_index++) { (_a_)[a_index] = _val_; }
 
 #define NLSL_SWAP(a, b, temp) { temp = a; a = b; b = temp; }
 
