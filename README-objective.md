@@ -10,6 +10,9 @@ NLSLmatrix_add | addition of two matrices
 NLSLmatrix_sub | difference of two matrices
 NLSLmatrix_mult | multiplication of two matrices
 NLSLmatrix_transpose | transpose of a matrix.
+NLSLmatrix_QRdecomp | QR-decomposition of a matrix
+NLSLmatrix_inv | invert a matrix
+NLSLmatrix_print | print a matrix in a human readable format
 <br>
 
 ## Matrix objective function
