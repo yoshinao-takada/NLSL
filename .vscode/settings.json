@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "*.ispc": "ispc",
-        "math.h": "c"
+        "math.h": "c",
+        "nlslgnsolver.h": "c",
+        "nlslsolver.h": "c"
     }
 }
