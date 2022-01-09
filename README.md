@@ -8,24 +8,28 @@ I considered following issues.
 * Portability: All the sorce codes are written in ISO-C 99 and does not depends on third party OSS.
 * Modularity: In many cases, small OSS mathematical programs are not well modularized and not easy to understand.
 * Documentation: Good documentation and adequate sample codes helps users to understand the code.
+* Supply a derivative free solver: Nelder-Mead method
+* Supply a non-derivative free solver: Gauss-Newton method, which requires multiple callbacks for Jacobian but very fast.
 
 Therefore I kept following features as much as possible.
 * Sticking to ISO-C 99
 * Build with gnu make (It is sufficient and good for small simple projects.)
-* Accompanied with small linear algebraic matrix functions and sample main program.
+* Equipped with small linear algebraic matrix functions and sample main program.
 * All functions and structures exposed from a source file are detailed commented.
 
 ## Source Files
 Names | Description
 --|--
-NLSLapp.c | main source of sample applications (applications are switched by #define EQUSETUP  <number>)
-NLSLsolver.c/.h | top level solver library functions
+NLSLapp.c | main source of sample applications for Nelder-Mead method (applications are switched by #define EQUSETUP  <number>)
+NLSLapp2.c | main source of a sample application for Gauss-Newton method
+NLSLsolver.c/.h | top level solver library functions of Nelder-Mead method
 NLSLvars.c/.h | container struct of x independent variable vector, y dependent variable vector
 NLSLutils.c/.h | simple array and pointer operations
 NLSLmatrix.c/.h | algebraic matrix operations; not used in NLSLsolver, just for developing user objective functions.
+NLSLgnsolver.c/.h | top level solver library functions of Gauss-Newton method
 <br>
 
-## Sample Codes
+## Sample Codes in NLSLapp.c
 ### Sample 0: Simple 2nd order optimization
 
 ### Sample 1: three 2x2 matrices make three 2x2 matrix products.
@@ -94,3 +98,5 @@ X<sub>INITIAL2</sub> = [
 &nbsp; &nbsp; -2.0, -1.0;  
 &nbsp; &nbsp; 0.0, 0.0  
 ]  
+
+## Sample
