@@ -33,3 +33,7 @@ __X__<sub>_i_+1</sub> = __X__<sub>_i_</sub> + __&delta;__ __X__<sub>_i_</sub>
 &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;  = __X__<sub>_i_</sub> -
 {J( __F__(__X__<sub>_i_</sub>) )<sup>T</sup> J( __F__(__X__<sub>_i_</sub>) )}<sup>-1</sup>
 J( __F__(__X__<sub>_i_</sub>) )<sup>T</sup> __F__(__X__<sub>_i_</sub>) . ----- (10)  
+
+## Implementation of NLSLgnsolver
+Basic flow is very similar to NLSLsolver which is a Nelder-Mead solver. Only the way of updating unknown 
+`solver->x` is different.

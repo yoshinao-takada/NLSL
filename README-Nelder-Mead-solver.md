@@ -1,4 +1,4 @@
-# Overview
+# Overview of Nelder-Mead solver
 ## Simplex vertices
 Vertices in N-dimensional space is stored in `NLSLsolver_t::vertices`. The elements are used for
 the purposes listed below.

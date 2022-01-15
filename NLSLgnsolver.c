@@ -94,6 +94,7 @@ void NLSLgnsolver_delete(pNLSLgnsolver_t* ppsolver)
     }
 }
 
+// Evaluating the objective function and Jacobian, update unknown solver->x is updated.
 static int NLSLgnsolver_calcjacobian(pNLSLgnsolver_t solver)
 {
     int err = EXIT_SUCCESS;

@@ -8,23 +8,32 @@
 #include <assert.h>
 
 #pragma region TestData_Definitions
+// homography transform desitination points in the projected plane
 static float pk[4][2] = {
-    { 100.0f, 100.0f }, { 220.0f, 100.0f }, { 100.0f, 200.0f }, { 0.0f, 0.0f }
+    { 100.0f, 100.0f }, { 220.0f, 100.0f }, { 100.0f, 200.0f }, // initialized
+    { 0.0f, 0.0f } // not initialized
 };
 
+// homography transform source points in the world coordinate
 static float pj[4][3] = {
-    { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }
+    { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, // initialized
+    { 0.0f, 0.0f, 0.0f } // not initialized
 };
 
+// Calculating homography matrix requires four sets of corresponding points.
+// The last point of pk and pj has not been initialized correctly.
+// Therefore the last points are initialized to make two parallelograms.
 static void FillLastPoints()
 {
-    float pkCenter[] = { pk[1][0] + pk[2][0], pk[1][1] + pk[2][1] };
+    // Set the 4th of pk
+    float pkCenter[] = { 0.5f * (pk[1][0] + pk[2][0]), 0.5f * (pk[1][1] + pk[2][1]) };
     float pkCenter_P0[] = { pkCenter[0] - pk[0][0], pkCenter[1] - pk[0][1] };
     float pk3[] = { pkCenter[0] + pkCenter_P0[0], pkCenter[1] + pkCenter_P0[1] };
     pk[3][0] = pk3[0];
     pk[3][1] = pk3[1];
 
-    float pjCenter[] = { pj[1][0] + pj[2][0], pj[1][1] + pj[2][1], pj[1][2] + pj[2][2] };
+    // set the 4th of pj
+    float pjCenter[] = { 0.5f * (pj[1][0] + pj[2][0]), 0.5f * (pj[1][1] + pj[2][1]), 0.5f * (pj[1][2] + pj[2][2]) };
     float pjCenter_P0[] = {
         pjCenter[0] - pj[0][0], pjCenter[1] - pj[0][1], pjCenter[2] - pj[0][2]
     };
@@ -35,7 +44,8 @@ static void FillLastPoints()
 }
 
 /**
- * @brief fill 8x9 matrix of objective function parameter
+ * @brief fill 8x9 matrix of objective function parameter; The linear equation part of equation (1) in
+ * README-app2-jacobian2.md.
  */
 static void ObjectiveParamMatrix(float* m)
 {
@@ -66,7 +76,7 @@ static void ObjectiveParamMatrix(float* m)
     mRowHead[3] = pj[3][0]; mRowHead[4] = pj[3][1]; mRowHead[5] = pj[3][2]; 
     mRowHead[6] = -pk[3][1] * pj[3][0]; mRowHead[7] = -pk[3][1] * pj[3][1]; mRowHead[8] = -pk[3][1] * pj[3][2];
     NLSLmatrix_t mat = { 8, 9, { m }};
-    NLSLmatrix_t matT = { 9, 8, { m + 72 }};
+    NLSLmatrix_t matT = { 9, 8, { m + 72 }}; // transpose of mat
     NLSLmatrix_transpose(&mat, &matT);
 }
 
@@ -77,12 +87,12 @@ static void ObjectiveParamMatrix(float* m)
  * @brief Objective function
  * 
  * @param cx 
- * @param x 
+ * @param x [in] homogoraphy matrix elements are unknown variables
  * @param cy 
- * @param y 
+ * @param y [out] should approatch the zero vector.
  * @param cp 
- * @param params 
- * @return int 
+ * @param params [in] was initialized by ObjectiveParamMatrix().
+ * @return int which is a dummy variable. The objective function never fails.
  */
 static int Objective(int cx, const float* x, int cy, float* y, int cp, const float* params)
 {
@@ -242,8 +252,8 @@ static void VerifyResults(pcNLSLgnsolver_t solver)
     NLSLmatrix_t h = { 3, 3, { NLSLgnsolver_xfinal(solver)}}; // homography matrix
     for (int iCorner = 0; iCorner != NLSL_ARRAYSIZE(pj); iCorner++)
     {
-        NLSLmatrix_t pj_ = { 3, 1, { pj[iCorner] }};
-        NLSLmatrix_t pk_ = { 3, 1, { pkwork }};
+        NLSLmatrix_t pj_ = { 3, 1, { pj[iCorner] }}; // 3D points
+        NLSLmatrix_t pk_ = { 3, 1, { pkwork }}; // projected into 2D plane
         NLSLmatrix_mult(&h, &pj_, &pk_);
         pkwork[0] /= pkwork[2];
         pkwork[1] /= pkwork[2];

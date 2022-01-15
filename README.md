@@ -25,7 +25,7 @@ NLSLapp2.c | main source of a sample application for Gauss-Newton method
 NLSLsolver.c/.h | top level solver library functions of Nelder-Mead method
 NLSLvars.c/.h | container struct of x independent variable vector, y dependent variable vector
 NLSLutils.c/.h | simple array and pointer operations
-NLSLmatrix.c/.h | algebraic matrix operations; not used in NLSLsolver, just for developing user objective functions.
+NLSLmatrix.c/.h | algebraic matrix operations, which is used in the sample applications and NLSLgnsolver.c.
 NLSLgnsolver.c/.h | top level solver library functions of Gauss-Newton method
 <br>
 
@@ -99,4 +99,5 @@ X<sub>INITIAL2</sub> = [
 &nbsp; &nbsp; 0.0, 0.0  
 ]  
 
-## Sample
+# Sample Code in NLSLapp2.c
+It is an application program to calculate elements of a homography matrix. It is one of popular computer graphics problem.
