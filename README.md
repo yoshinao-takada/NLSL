@@ -22,12 +22,15 @@ Names | Description
 --|--
 NLSLapp.c | main source of sample applications for Nelder-Mead method (applications are switched by #define EQUSETUP  <number>)
 NLSLapp2.c | main source of a sample application for Gauss-Newton method
+NLSLapp3.c | main source of a sample application for Gauss-Newton method
+NLSLapp4.c | main source of a sample application for Gauss-Newton method(latest and most well documented)
 NLSLsolver.c/.h | top level solver library functions of Nelder-Mead method
 NLSLvars.c/.h | container struct of x independent variable vector, y dependent variable vector
 NLSLutils.c/.h | simple array and pointer operations
 NLSLmatrix.c/.h | algebraic matrix operations, which is used in the sample applications and NLSLgnsolver.c.
 NLSLgnsolver.c/.h | top level solver library functions of Gauss-Newton method
-<br>
+
+Note: Refer to [README-gaussnewton.md](README-gaussnewton.md) for details of Gauss-Newton solver.
 
 ## Sample Codes in NLSLapp.c
 ### Sample 0: Simple 2nd order optimization

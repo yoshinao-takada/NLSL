@@ -20,9 +20,11 @@ DEBUG_TARGET2 = $(DEBUG_TARGET_DIR)/NLSLapp2.exe
 RELEASE_TARGET2 = $(RELEASE_TARGET_DIR)/NLSLapp2.exe
 DEBUG_TARGET3 = $(DEBUG_TARGET_DIR)/NLSLapp3.exe
 RELEASE_TARGET3 = $(RELEASE_TARGET_DIR)/NLSLapp3.exe
+DEBUG_TARGET4 = $(DEBUG_TARGET_DIR)/NLSLapp4.exe
+RELEASE_TARGET4 = $(RELEASE_TARGET_DIR)/NLSLapp4.exe
 
 # ----------- debug --------------------
-debug	:	$(DEBUG_TARGET) $(DEBUG_TARGET2) $(DEBUG_TARGET3)
+debug	:	$(DEBUG_TARGET) $(DEBUG_TARGET2) $(DEBUG_TARGET3) $(DEBUG_TARGET4)
 $(DEBUG_TARGET)	:	$(DEBUG_OBJECTS) $(DEBUG_OBJECT_DIR)/NLSLapp.o
 	$(CC) -o $@ $^ $(DEBUG_LIBS)
 
@@ -30,6 +32,9 @@ $(DEBUG_TARGET2)	:		$(DEBUG_OBJECTS) $(DEBUG_OBJECT_DIR)/NLSLapp2.o
 	$(CC) -o $@ $^ $(DEBUG_LIBS)
 
 $(DEBUG_TARGET3)	:		$(DEBUG_OBJECTS) $(DEBUG_OBJECT_DIR)/NLSLapp3.o
+	$(CC) -o $@ $^ $(DEBUG_LIBS)
+
+$(DEBUG_TARGET4)	:		$(DEBUG_OBJECTS) $(DEBUG_OBJECT_DIR)/NLSLapp4.o
 	$(CC) -o $@ $^ $(DEBUG_LIBS)
 
 $(DEBUG_OBJECT_DIR)/NLSLapp.o	:	NLSLapp.c *.h
@@ -41,6 +46,10 @@ $(DEBUG_OBJECT_DIR)/NLSLapp2.o	:	NLSLapp2.c NLSLgnsolver.h NLSLsolver.h NLSLutil
 	$(CC) $(DEBUG_CC_FLAGS) -o $@ $<
 
 $(DEBUG_OBJECT_DIR)/NLSLapp3.o	:	NLSLapp3.c NLSLgnsolver.h NLSLsolver.h NLSLutils.h
+	mkdir -p $(DEBUG_OBJECT_DIR)
+	$(CC) $(DEBUG_CC_FLAGS) -o $@ $<
+
+$(DEBUG_OBJECT_DIR)/NLSLapp4.o	:	NLSLapp4.c NLSLgnsolver.h NLSLsolver.h NLSLutils.h
 	mkdir -p $(DEBUG_OBJECT_DIR)
 	$(CC) $(DEBUG_CC_FLAGS) -o $@ $<
 
@@ -69,10 +78,11 @@ clean_debug	:
 	rm -f $(DEBUG_OBJECT_DIR)/NLSLapp.o
 	rm -f $(DEBUG_OBJECT_DIR)/NLSLapp2.o
 	rm -f $(DEBUG_OBJECT_DIR)/NLSLapp3.o
+	rm -f $(DEBUG_OBJECT_DIR)/NLSLapp4.o
 	rm -f $(DEBUG_TARGET)
 
 # ----------- release --------------------
-release	:	$(RELEASE_TARGET) $(RELEASE_TARGET2) $(RELEASE_TARGET3)
+release	:	$(RELEASE_TARGET) $(RELEASE_TARGET2) $(RELEASE_TARGET3) $(RELEASE_TARGET4)
 $(RELEASE_TARGET)	:	$(RELEASE_OBJECTS) $(DEBUG_OBJECT_DIR)/NLSLapp.o
 	$(CC) -o $@ $^ $(RELEASE_LIBS)
 
@@ -80,6 +90,9 @@ $(RELEASE_TARGET2)	:	$(RELEASE_OBJECTS) $(DEBUG_OBJECT_DIR)/NLSLapp2.o
 	$(CC) -o $@ $^ $(RELEASE_LIBS)
 
 $(RELEASE_TARGET3)	:	$(RELEASE_OBJECTS) $(DEBUG_OBJECT_DIR)/NLSLapp3.o
+	$(CC) -o $@ $^ $(RELEASE_LIBS)
+
+$(RELEASE_TARGET4)	:	$(RELEASE_OBJECTS) $(DEBUG_OBJECT_DIR)/NLSLapp4.o
 	$(CC) -o $@ $^ $(RELEASE_LIBS)
 
 $(RELEASE_OBJECT_DIR)/NLSLapp.o	:	NLSLapp.c *.h
@@ -91,6 +104,10 @@ $(RELEASE_OBJECT_DIR)/NLSLapp2.o	:	NLSLapp2.c NLSLgnsolver.h NLSLsolver.h NLSLut
 	$(CC) $(RELEASE_CC_FLAGS) -o $@ $<
 
 $(RELEASE_OBJECT_DIR)/NLSLapp3.o	:	NLSLapp3.c NLSLgnsolver.h NLSLsolver.h NLSLutils.h
+	mkdir -p $(RELEASE_OBJECT_DIR)
+	$(CC) $(RELEASE_CC_FLAGS) -o $@ $<
+
+$(RELEASE_OBJECT_DIR)/NLSLapp4.o	:	NLSLapp4.c NLSLgnsolver.h NLSLsolver.h NLSLutils.h
 	mkdir -p $(RELEASE_OBJECT_DIR)
 	$(CC) $(RELEASE_CC_FLAGS) -o $@ $<
 
@@ -119,6 +136,7 @@ clean_release	:
 	rm -f $(RELEASE_TARGET_DIR)/NLSLapp.o
 	rm -f $(RELEASE_TARGET_DIR)/NLSLapp2.o
 	rm -f $(RELEASE_TARGET_DIR)/NLSLapp3.o
+	rm -f $(RELEASE_TARGET_DIR)/NLSLapp4.o
 	rm -f $(RELEASE_TARGET)
 
 clean_all	:	clean_debug clean_release

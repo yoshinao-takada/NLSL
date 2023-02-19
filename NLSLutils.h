@@ -1,5 +1,9 @@
 #ifndef NLSLUTILS_H_
 #define NLSLUTILS_H_
+/**
+ * @file NLSLutils.h
+ * @brief BLAS like low level vector-vector and vector-scalar operation
+*/
 #ifdef __cplusplus
 extern "C" {
 #endif

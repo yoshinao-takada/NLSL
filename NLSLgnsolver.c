@@ -135,17 +135,17 @@ static int NLSLgnsolver_calcjacobian(pNLSLgnsolver_t solver)
             NLSLmatrix_t x = { solver->conf.cx, 1, { solver->x }};
             NLSLmatrix_transpose(&jT, &j);
             NLSLmatrix_mult(&jT, &j, &jTj);
-            if (solver->conf.trace)
-            {
-                fprintf(solver->conf.trace, "jTj @ %s, %d\n", __FUNCTION__, __LINE__);
-                NLSLmatrix_print(solver->conf.trace, &jTj);
-            }
+            // if (solver->conf.trace)
+            // {
+            //     fprintf(solver->conf.trace, "jTj @ %s, %d\n", __FUNCTION__, __LINE__);
+            //     NLSLmatrix_print(solver->conf.trace, &jTj);
+            // }
             NLSLmatrix_inv(&jTj, &jTjinv);
-            if (solver->conf.trace)
-            {
-                fprintf(solver->conf.trace, "jTjinv @ %s, %d\n", __FUNCTION__, __LINE__);
-                NLSLmatrix_print(solver->conf.trace, &jTjinv);
-            }
+            // if (solver->conf.trace)
+            // {
+            //     fprintf(solver->conf.trace, "jTjinv @ %s, %d\n", __FUNCTION__, __LINE__);
+            //     NLSLmatrix_print(solver->conf.trace, &jTjinv);
+            // }
             NLSLmatrix_mult(&jT, &y, &temp0);
             NLSLmatrix_mult(&jTjinv, &temp0, &deltax);
             NLSLmatrix_sub(&x, &deltax, &temp1);
@@ -218,17 +218,33 @@ int NLSLgnsolver_exec(pNLSLgnsolver_t solver, int iterMax)
         {
             if (EXIT_SUCCESS != (err = NLSLgnsolver_calcjacobian(solver)))
             {
+                if (solver->conf.trace)
+                {
+                    fprintf(solver->conf.trace, "%s termination by error: err = 0x%08x(%d) iteration = %d\n", __func__, err, err, i);
+                }
                 break;
             }
             NLSLgnsolver_updatestatus(solver);
             if (solver->status != NLSLstatus_running)
             {
+                if (solver->conf.trace)
+                {
+                    fprintf(solver->conf.trace, "solver->status = %d\n", (int)solver->status);
+                }
                 break;
+            }
+            if (solver->conf.trace)
+            {
+                fprintf(solver->conf.trace, "i @ %s, %d = %d\n", __func__, __LINE__, i);
             }
         }
         if (solver->status == NLSLstatus_running)
         {
             solver->status = NLSLstatus_iterlimit;
+            if (solver->conf.trace)
+            {
+                fprintf(solver->conf.trace, "solver reached iteration limit(=%d) without convergence.\n", iterMax);
+            }
         }
     } while (0);
     return err;
